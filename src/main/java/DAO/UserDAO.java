@@ -146,7 +146,7 @@ public class UserDAO implements AccessDatabase<UserDTO>{
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "update tour set " +
+            String sql = "update user set " +
                     "user_name=?," +
                     "password=?," +
                     "fullname=?," +

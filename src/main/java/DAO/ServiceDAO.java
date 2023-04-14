@@ -1,8 +1,7 @@
 package DAO;
 
-import DTO.CustomerDTO;
-import DTO.UserDTO;
-
+import DTO.PlaceDTO;
+import DTO.ServiceDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,25 +9,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerDAO implements AccessDatabase<CustomerDTO> {
-
+public class ServiceDAO implements AccessDatabase<ServiceDTO>{
     @Override
-    public ArrayList<CustomerDTO> getAll() {
-        ArrayList<CustomerDTO> arr = new ArrayList<CustomerDTO>();
+    public ArrayList<ServiceDTO> getAll() {
+        ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
         ConnectDatabase conndb = new ConnectDatabase();
         try {
             Connection conn = conndb.getConnection();
-            String query = "Select * from customer";
+            String query = "Select * from service";
             ResultSet rs = conn.createStatement().executeQuery(query);
             while (rs.next()) {
-                CustomerDTO customer = new CustomerDTO();
-                customer.setCustomer_id(rs.getInt("customer_id"));
-                customer.setCustomer_name(rs.getString("customer_name"));
-                customer.setTel(rs.getInt("tel"));
-                customer.setBirthday(rs.getDate("birthday"));
-                customer.setEmail(rs.getString("email"));
-                customer.setCreate_at(rs.getDate("create_at"));
-                arr.add(customer);
+                ServiceDTO service = new ServiceDTO();
+                service.setService_id(rs.getInt("service_id"));
+                service.setService_name(rs.getString("service_name"));
+                service.setService_price(rs.getDouble("service_price"));
+                arr.add(service);
             }
 
         }
@@ -43,23 +38,20 @@ public class CustomerDAO implements AccessDatabase<CustomerDTO> {
     }
 
     @Override
-    public CustomerDTO getById(int id) {
-        CustomerDTO customer = new CustomerDTO();
+    public ServiceDTO getById(int id) {
+        ServiceDTO service = new ServiceDTO();
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String query = "select * from customer where customer_id = ?";
+            String query = "select * from service where service_id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();
             if (rs.next()){
-                customer.setCustomer_id(rs.getInt("customer_id"));
-                customer.setCustomer_name(rs.getString("customer_name"));
-                customer.setTel(rs.getInt("tel"));
-                customer.setBirthday(rs.getDate("birthday"));
-                customer.setEmail(rs.getString("email"));
-                customer.setCreate_at(rs.getDate("create_at"));
+                service.setService_id(rs.getInt("service_id"));
+                service.setService_name(rs.getString("service_name"));
+                service.setService_price(rs.getDouble("service_price"));
             }
             else return null;
 
@@ -69,23 +61,21 @@ public class CustomerDAO implements AccessDatabase<CustomerDTO> {
         finally {
             conndb.closeConnection();
         }
-        return customer;
+        return service;
     }
 
     @Override
-    public boolean add(CustomerDTO customerDTO) {
+    public boolean add(ServiceDTO serviceDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "insert into customer value (?,?,?,?,?)";
+            String sql = "insert into place value (?,?,?)";
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,customerDTO.getCustomer_id());
-            st.setString(2,customerDTO.getCustomer_name());
-            st.setInt(3,customerDTO.getTel());
-            st.setDate(4,customerDTO.getBirthday());
-            st.setString(5,customerDTO.getEmail());
+            st.setInt(1,serviceDTO.getService_id());
+            st.setString(2,serviceDTO.getService_name());
+            st.setDouble(3,serviceDTO.getService_price());
 
             if (st.executeUpdate()>=1)
                 result = true;
@@ -102,23 +92,19 @@ public class CustomerDAO implements AccessDatabase<CustomerDTO> {
     }
 
     @Override
-    public boolean update(CustomerDTO customerDTO) {
+    public boolean update(ServiceDTO serviceDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "update customer set " +
-                    "customer_name=?," +
-                    "tel=?," +
-                    "birthday=?," +
-                    "email=? " +
-                    "where customer_id = " + customerDTO.getCustomer_id();
+            String sql = "update service set " +
+                    "service_name=?," +
+                    "service_price=? " +
+                    "where place_id = " + serviceDTO.getService_id();
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1,customerDTO.getCustomer_name());
-            st.setInt(2,customerDTO.getTel());
-            st.setDate(3,customerDTO.getBirthday());
-            st.setString(4,customerDTO.getEmail());
+            st.setString(1,serviceDTO.getService_name());
+            st.setDouble(2,serviceDTO.getService_price());
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -140,7 +126,7 @@ public class CustomerDAO implements AccessDatabase<CustomerDTO> {
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "delete from customer where customer_id = ?";
+            String sql = "delete from service where service_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             if (st.executeUpdate()>=1)
@@ -164,7 +150,7 @@ public class CustomerDAO implements AccessDatabase<CustomerDTO> {
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "select * from customer where customer_id = ?";
+            String sql = "select * from service where service_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();

@@ -2,6 +2,7 @@ package DAO;
 
 import DTO.TourDTO;
 
+import java.awt.image.AreaAveragingScaleFilter;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -196,4 +197,6 @@ public class TourDAO implements AccessDatabase<TourDTO>{
         }
         return result;
     }
+
+
 }
