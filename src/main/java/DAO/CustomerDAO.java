@@ -1,34 +1,34 @@
 package DAO;
 
-import DTO.TourDTO;
+import DTO.CustomerDTO;
+import DTO.UserDTO;
 
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class TourDAO implements AccessDatabase<TourDTO>{
+public class CustomerDAO implements AccessDatabase<CustomerDTO> {
 
     @Override
-    public ArrayList<TourDTO> getAll() {
-        ArrayList<TourDTO> arr = new ArrayList<TourDTO>();
+    public ArrayList<CustomerDTO> getAll() {
+        ArrayList<CustomerDTO> arr = new ArrayList<CustomerDTO>();
         ConnectDatabase conndb = new ConnectDatabase();
         try {
             Connection conn = conndb.getConnection();
-            String query = "Select * from tour";
+            String query = "Select * from customer";
             ResultSet rs = conn.createStatement().executeQuery(query);
             while (rs.next()) {
-                TourDTO tour = new TourDTO();
-                tour.setTour_id(rs.getInt("tour_id"));
-                tour.setTour_name(rs.getString("tour_name"));
-                tour.setTourguide_id(rs.getInt("tourguide_id"));
-                tour.setHotel_id(rs.getInt("hotel_id"));
-                tour.setPrice(rs.getDouble("price"));
-                tour.setStart_day(rs.getDate("start_day"));
-                tour.setEnd_day(rs.getDate("end_day"));
-                tour.setDeparture_place(rs.getString("departure_place"));
-                tour.setSchedule_describe(rs.getString("schedule_describe"));
-                tour.setCreate_at(rs.getDate("create_at"));
-
-                arr.add(tour);
+                CustomerDTO customer = new CustomerDTO();
+                customer.setCustomer_id(rs.getInt("customer_id"));
+                customer.setCustomer_name(rs.getString("customer_name"));
+                customer.setTel(rs.getInt("tel"));
+                customer.setBirthday(rs.getDate("birthday"));
+                customer.setEmail(rs.getString("email"));
+                customer.setCreate_at(rs.getDate("create_at"));
+                arr.add(customer);
             }
 
         }
@@ -43,27 +43,23 @@ public class TourDAO implements AccessDatabase<TourDTO>{
     }
 
     @Override
-    public TourDTO getById(int id) {
-        TourDTO tour = new TourDTO();
+    public CustomerDTO getById(int id) {
+        CustomerDTO customer = new CustomerDTO();
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String query = "select * from tour where tour_id = ?";
+            String query = "select * from customer where customer_id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();
             if (rs.next()){
-                tour.setTour_id(rs.getInt("tour_id"));
-                tour.setTour_name(rs.getString("tour_name"));
-                tour.setTourguide_id(rs.getInt("tourguide_id"));
-                tour.setHotel_id(rs.getInt("hotel_id"));
-                tour.setPrice(rs.getDouble("price"));
-                tour.setStart_day(rs.getDate("start_day"));
-                tour.setEnd_day(rs.getDate("end_day"));
-                tour.setDeparture_place(rs.getString("departure_place"));
-                tour.setSchedule_describe(rs.getString("schedule_describe"));
-                tour.setCreate_at(rs.getDate("create_at"));
+                customer.setCustomer_id(rs.getInt("customer_id"));
+                customer.setCustomer_name(rs.getString("customer_name"));
+                customer.setTel(rs.getInt("tel"));
+                customer.setBirthday(rs.getDate("birthday"));
+                customer.setEmail(rs.getString("email"));
+                customer.setCreate_at(rs.getDate("create_at"));
             }
             else return null;
 
@@ -73,28 +69,24 @@ public class TourDAO implements AccessDatabase<TourDTO>{
         finally {
             conndb.closeConnection();
         }
-        return tour;
-
+        return customer;
     }
 
     @Override
-    public boolean add(TourDTO tourDTO) {
+    public boolean add(CustomerDTO customerDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "insert into tour value (?,?,?,?,?,?,?,?,?)";
+            String sql = "insert into customer value (?,?,?,?,?)";
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,tourDTO.getTour_id());
-            st.setString(2,tourDTO.getTour_name());
-            st.setInt(3,tourDTO.getTourguide_id());
-            st.setInt(4,tourDTO.getHotel_id());
-            st.setDouble(5,tourDTO.getPrice());
-            st.setDate(6,tourDTO.getStart_day());
-            st.setDate(7,tourDTO.getEnd_day());
-            st.setString(8,tourDTO.getDeparture_place());
-            st.setString(9,tourDTO.getSchedule_describe());
+            st.setInt(1,customerDTO.getCustomer_id());
+            st.setString(2,customerDTO.getCustomer_name());
+            st.setInt(3,customerDTO.getTel());
+            st.setDate(4,customerDTO.getBirthday());
+            st.setString(5,customerDTO.getEmail());
+
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -110,31 +102,23 @@ public class TourDAO implements AccessDatabase<TourDTO>{
     }
 
     @Override
-    public boolean update(TourDTO tourDTO) {
+    public boolean update(CustomerDTO customerDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
             String sql = "update tour set " +
-                    "tour_name=?," +
-                    "tourguide_id=?," +
-                    "hotel_id=?," +
-                    "price=?," +
-                    "start_day=?," +
-                    "end_day=?," +
-                    "departure_place=?," +
-                    "schedule_describe=? " +
-                    "where tour_id = " + tourDTO.getTour_id();
+                    "customer_name=?," +
+                    "tel=?," +
+                    "birthday=?," +
+                    "email=? " +
+                    "where customer_id = " + customerDTO.getCustomer_id();
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1,tourDTO.getTour_name());
-            st.setInt(2,tourDTO.getTourguide_id());
-            st.setInt(3,tourDTO.getHotel_id());
-            st.setDouble(4,tourDTO.getPrice());
-            st.setDate(5,tourDTO.getStart_day());
-            st.setDate(6,tourDTO.getEnd_day());
-            st.setString(7,tourDTO.getDeparture_place());
-            st.setString(8,tourDTO.getSchedule_describe());
+            st.setString(1,customerDTO.getCustomer_name());
+            st.setInt(2,customerDTO.getTel());
+            st.setDate(3,customerDTO.getBirthday());
+            st.setString(4,customerDTO.getEmail());
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -156,7 +140,7 @@ public class TourDAO implements AccessDatabase<TourDTO>{
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "delete from tour where tour_id = ?";
+            String sql = "delete from customer where customer_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             if (st.executeUpdate()>=1)
@@ -180,7 +164,7 @@ public class TourDAO implements AccessDatabase<TourDTO>{
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "select * from tour where tour_id = ?";
+            String sql = "select * from customer where customer_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();
