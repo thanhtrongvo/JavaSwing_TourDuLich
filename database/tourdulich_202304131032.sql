@@ -25,7 +25,10 @@ SET NAMES 'utf8';
 --
 -- Set default database
 --
-USE tour_du_lich;
+USE tour_du_lich1;
+
+
+
 
 --
 -- Drop table `booking_detail`
@@ -82,10 +85,11 @@ DROP TABLE IF EXISTS user;
 --
 DROP TABLE IF EXISTS role;
 
+
 --
 -- Set default database
 --
-USE tour_du_lich;
+USE tour_du_lich1;
 
 --
 -- Create table `role`
@@ -135,6 +139,27 @@ ALTER TABLE user
 ADD CONSTRAINT fk_User_Group FOREIGN KEY (role_id)
 REFERENCES role (role_id) ON UPDATE CASCADE;
 
+
+
+
+CREATE TABLE customer (
+  customer_id int NOT NULL PRIMARY KEY,
+  customer_name varchar(100) NOT NULL DEFAULT 'abc',
+  tel int DEFAULT NULL,
+  birthday date DEFAULT NULL,
+  email text DEFAULT NULL,
+  create_at datetime DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO customer (customer_id, customer_name, tel, birthday, email) VALUES
+(1,'Nguyễn Thị lé',0932166945,'4/13/2023','abc@gmai.com'),
+(2,'Nguyễn Thị lé1',0932166946,'4/13/2023','ab1c@gmai.com'),
+(3,'Nguyễn Thị lé2',0932166947,'4/13/2023','abc2@gmai.com'),
+(4,'Nguyễn Thị lé3',0932166948,'4/13/2023','ab3c@gmai.com'),
+(5,'Nguyễn Thị lé4',0932166949,'4/13/2023','abc4@gmai.com');
+
+
+
 --
 -- Create table `hotel`
 --
@@ -162,8 +187,8 @@ CREATE TABLE tour (
   tourguide_id int DEFAULT NULL,
   hotel_id int DEFAULT NULL,
   price decimal(20, 4) NOT NULL,
-  start_day datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  end_day datetime NOT NULL,
+  start_day date NULL,
+  end_day date  NULL,
   departure_place varchar(100) DEFAULT NULL,
   schedule_describe text DEFAULT NULL,
   create_at datetime DEFAULT CURRENT_TIMESTAMP,
@@ -194,8 +219,9 @@ REFERENCES user (user_id) ON DELETE SET NULL ON UPDATE CASCADE;
 CREATE TABLE booking (
   booking_id int NOT NULL AUTO_INCREMENT,
   tour_id int NOT NULL,
-  user_id int NOT NULL,
-  number int NOT NULL DEFAULT 1,
+  customer_id int NOT NULL,
+  customer_number int NOT NULL DEFAULT 1,
+  service_id int NOT NULL ,
   total_cost decimal(20, 4) NOT NULL DEFAULT 0.0000,
   create_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (booking_id)
@@ -208,8 +234,12 @@ COLLATE utf8mb4_0900_ai_ci;
 -- Create foreign key
 --
 ALTER TABLE booking
-ADD CONSTRAINT fk_Booking_Customer FOREIGN KEY (user_id)
-REFERENCES user (user_id) ON UPDATE CASCADE;
+ADD CONSTRAINT fk_Booking_Customer FOREIGN KEY (customer_id)
+REFERENCES customer (customer_id) ON UPDATE CASCADE ;
+
+ALTER TABLE booking
+ADD CONSTRAINT fk_Booking_Service FOREIGN KEY (service_id)
+REFERENCES service (service_id) ON UPDATE CASCADE;
 
 --
 -- Create foreign key
@@ -221,18 +251,38 @@ REFERENCES tour (tour_id) ON UPDATE CASCADE;
 --
 -- Create table `place`
 --
+
+CREATE TABLE region (
+  region_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  region_code varchar(100) UNIQUE
+);
+
+
+INSERT INTO region (region_id, region_code) VALUES 
+(1,'vietnam\hue'),
+(2,'vietnam\nhatrang'),
+(3,'vietnam\quangninh'),
+(4,'vietnam\phuquoc'),
+(5,'vietnam\dalat');
+                      
+
 CREATE TABLE place (
   place_id int NOT NULL AUTO_INCREMENT,
   place_name varchar(100) NOT NULL,
   place_describe text DEFAULT NULL,
-  star tinyint DEFAULT 3,
-  region varchar(100) DEFAULT NULL,
+  place_address varchar(100) DEFAULT '',
+  region_code varchar(100) ,
   PRIMARY KEY (place_id)
 )
 ENGINE = INNODB,
 AUTO_INCREMENT = 30,
 CHARACTER SET utf8mb4,
 COLLATE utf8mb4_0900_ai_ci;
+
+ALTER TABLE place
+ADD CONSTRAINT fk_Place_region FOREIGN KEY (region_code)
+REFERENCES region (region_code) ON UPDATE CASCADE;
+
 
 --
 -- Create table `tour_detail`
@@ -324,29 +374,10 @@ COLLATE utf8mb4_0900_ai_ci;
 --
 -- Create table `booking_detail`
 --
-CREATE TABLE booking_detail (
-  bs_id int NOT NULL AUTO_INCREMENT,
-  booking_id int NOT NULL,
-  service_id int NOT NULL,
-  PRIMARY KEY (bs_id)
-)
-ENGINE = INNODB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_0900_ai_ci;
 
---
--- Create foreign key
---
-ALTER TABLE booking_detail
-ADD CONSTRAINT fk_bs_booking FOREIGN KEY (booking_id)
-REFERENCES booking (booking_id) ON DELETE CASCADE ON UPDATE CASCADE;
 
---
--- Create foreign key
---
-ALTER TABLE booking_detail
-ADD CONSTRAINT fk_bs_service FOREIGN KEY (service_id)
-REFERENCES service (service_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+
 
 -- 
 -- Dumping data for table role
@@ -389,59 +420,60 @@ INSERT INTO user VALUES
 (6, 'hdv1', '123', 'hướng dẫn viên', 908133765, '0000-00-00', 'hdv1@mail.com', '2023-04-13 10:26:16', 6),
 (7, 'hdv2', '123', 'hướng dẫn viên', 908133765, '0000-00-00', 'hdv2@mail.com', '2023-04-13 10:26:16', 6),
 (8, 'hdv3', '123', 'hướng dẫn viên', 908133765, '0000-00-00', 'hdv3@mail.com', '2023-04-13 10:26:16', 6),
-(9, 'hdv4', '123', 'hướng dẫn viên', 908133765, '0000-00-00', 'hdv4@mail.com', '2023-04-13 10:26:16', 6),
-(10, 'kh1', '123', 'Nguyễn Thị Lé', 908133765, '0000-00-00', 'kh1@mail.com', '2023-04-13 10:26:16', 7),
-(11, 'kh2', '123', 'Trận thị Bùi', 908133765, '0000-00-00', 'kh2@mail.com', '2023-04-13 10:26:16', 7),
-(12, 'kh3', '123', 'Lê Văn Công', 908133765, '0000-00-00', 'kh3@mail.com', '2023-04-13 10:26:16', 7),
-(13, 'kh4', '123', 'Bùi thị Tổng', 908133765, '0000-00-00', 'kh4@mail.com', '2023-04-13 10:26:16', 7),
-(14, 'kh5', '123', 'Nguyễn Thị Lé1', 908133765, '0000-00-00', 'kh5@mail.com', '2023-04-13 10:26:16', 7),
-(15, 'kh6', '123', 'Nguyễn Thị Lé2', 908133765, '0000-00-00', 'kh6@mail.com', '2023-04-13 10:26:16', 7);
+(9, 'hdv4', '123', 'hướng dẫn viên', 908133765, '0000-00-00', 'hdv4@mail.com', '2023-04-13 10:26:16', 6);
 
 -- 
 -- Dumping data for table tour
 --
 INSERT INTO tour VALUES
-(1, 'Du lịch việt nam', 6, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(2, 'Du lịch thái lan', 7, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(3, 'Du lịch nhật bản', 6, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(4, 'Du lịch phố cổ Hội An', 7, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(5, 'Du lịch hè nhật bản', 8, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(6, 'Du lịch Vườn quốc gia thái lan', 8, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09'),
-(7, 'Du lịch Vịnh San Hô - Động Phong Nha Kẻ Bàng ...', 9, 1, 500000.0000, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 'Hồ Chí Minh', 'Trải nghiệm mùa hoa tuyết Hàn Quốc\r\nHàn Quốc là đất nước níu chân khách du lịch khắp thế giới với thiên nhiên tươi đẹp bốn mùa. Du lịch Hàn Quốc đem đến những cảm nhận tuyệt vời về nét đặc trưng Á Đông truyền thống nhưng không kém phần hiện đại với rất nhiều danh lam thắng cảnh nổi tiếng khắp đất nước. Riêng Seoul đã có bao nhiêu cảnh sắc thu hút du khách: Đảo Nami xinh đẹp và bình yên, Lotte World là xứ sở thần tiên, những lễ hội vui nhộn, đậm đà bản sắc dân tộc. Cùng iVIVU trải nghiệm điểm đến tuyệt vời này ngay hôm nay!\r\n\r\nNhững trải nghiệm thú vị trong chương trình\r\n- Đảo Nami: hòn đảo nhân tạo xinh đẹp nằm ở ngoại ô Seoul, du khách tìm đến đây để tận mắt ngắm nhìn cảnh sắc thiên nhiên thơ mộng, lãng mạn nhất là con đường nằm giữa hai hàng cây thủy sam.\r\n\r\n- Cung điện Kyeongbok: hoàng cung lớn nhất tiêu biểu cho kiến trúc cổ điển và là một công trình tiêu biểu của Hàn Quốc và là cung điện hoàng gia lớn nhất Hàn Quốc.\r\n\r\n- Tháp Namsan: cảm nhận được không gian đầy tình yêu thương của những cặp đôi tìm đến đây để treo những chiếc ổ khóa đầy màu sắc biểu tượng cho tình yêu của họ.\r\n\r\n- Suối Cheonggyecheon con suối trong mát dài 5.8 km giữa lòng thủ đô Seoul.\r\n\r\n- Tháp N Seoul tọa lạc trên núi Namsan và đã trở thành một biểu tượng của Seoul.\r\n\r\n- Hero Show một show diễn nghệ thuật vẽ đặc sắc và vui nhộn từ các chàng trai tài hoa.\r\n\r\nBạn có sẵn sàng\r\nMột số điều kiện chung giúp Quý Khách nâng cao tỷ lệ xin Visa Hàn Quốc thành công:\r\n\r\n- Đã từng đi du lịch các nước ở khu vực Đông Nam Á.\r\n\r\n- Có công việc ổn định và thu nhập tốt\r\n\r\n- Có tài sản đứng tên như nhà đất, xe hơi, sổ tiết kiệm...\r\n\r\n- Chưa từng bị từ chối visa trước đây\r\n\r\n- Tải App PC Covid xác nhận tiêm chủng đủ 2 mũi trở lên.\r\n\r\niVIVU luôn sẵn sàng tư vấn chi tiết cho Quý Khách theo từng trường hợp cụ thể.\r\n\r\nChương trình tour\r\nƯU ĐÃI ĐẶC BIỆT: GIẢM NGAY 400K/KHÁCH KHI KHÁCH ĐẶT TOUR. ĐIỀU KIỆN: ÁP DỤNG NHÓM 4 KHÁCH TRỞ LÊN.\r\nNGÀY 1: TP.HCM - SEOUL ( NGHỈ ĐÊM TRÊN MÁY BAY)\r\nQuý khách tập trung tại sân bay Tân Sơn Nhất ga đi quốc tế, Trưởng Đoàn hướng dẫn làm thủ tục hàng không cho quý khách đáp chuyến bay đi Hàn Quốc.\r\n\r\nNGÀY 2: SEOUL - ĐẢO NAMI - THÁP N SEOUL ( ĂN SÁNG, TRƯA, TỐI)\r\nĐến sân bay Quốc Tế Incheon, hướng dẫn viên đón đoàn chào mừng đoàn đến với Thủ đô Seoul. Để nạp thêm năng lượng sau chuyến bay đêm, đoàn dùng bữa trưa tại nhà hàng địa phương thưởng thức ẩm thực tại Xứ sở Kim chi.\r\n\r\nTiếp đến, Quý khách khởi hành đi tham quan:\r\n\r\n- Đảo Nami – Nổi tiếng với những bản màu sắc riêng theo từng mùa: Mùa thu rực rỡ ánh vàng đỏ của tán cây phong và rừng ngân hạnh; Mùa hè có cây cối mướt xanh; Mùa đông huyền ảo với tuyết phủ trắng xóa& cuối cùng đặc biệt là vào Mùa xuânhàng trăm cây hoa anh đào nhuộm sắc hồng rực rỡ, với mùi hương ngọt ngào phảng phất không khí và lànơi ra đời của nhiều bộ phim truyền hình nổi tiếng của Hàn Quốc đã làm dấy lên cơn sốt nghệ thuật thứ bảy tại các nước CHÂU Á và thế giới như: "Bản Tình Ca Mùa Đông".', '2023-04-13 10:27:09');
+(1, 'Du lịch huế', 6, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09'),
+(2, 'Du lịch đà lạt', 7, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09'),
+(3, 'Du lịch nha trang', 6, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09'),
+(4, 'Du lịch đảo nha trang', 7, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09'),
+(5, 'Du lịch hạ long', 8, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09'),
+(6, 'Du lịch phú quốc', 8, 1, 500000.0000, '2023-5-13', '2023-5-23', 'Hồ Chí Minh', 'abc', '2023-04-13 10:27:09');
 
 -- 
 -- Dumping data for table place
 --
 INSERT INTO place VALUES
-(1, 'Vịnh San Hô', NULL, 4, 'vietnam'),
-(2, 'Động Phong Nha Kẻ Bàng', NULL, 4, 'vietnam'),
-(3, 'Bãi Biển Dinh Cô', NULL, 4, 'vietnam'),
-(4, 'Phố Cổ Hà Nội', NULL, 4, 'vietnam'),
-(5, 'Hồ Dầu Tiếng', NULL, 4, 'vietnam'),
-(6, 'Đảo Phú Quý', NULL, 4, 'vietnam'),
-(7, 'Bãi Tắm Quy Nhơn', NULL, 4, 'vietnam'),
-(8, 'Khu Du Lịch Sinh Thái Thủy Châu', NULL, 4, 'vietnam'),
-(9, 'Thác Đá Hàn', NULL, 4, 'vietnam'),
-(10, 'Bà Nà Hill', NULL, 4, 'vietnam'),
-(11, 'Mộc Châu', NULL, 4, 'vietnam'),
-(12, 'Phố Cổ Hội An', NULL, 4, 'vietnam'),
-(13, 'Xứ sở cờ hoa', NULL, 4, 'America'),
-(14, 'Vòng quanh Châu Âu', NULL, 4, 'Europe'),
-(15, 'Ghé thăm Châu Úc', NULL, 4, 'Australia '),
-(16, 'quần đảo Similan', NULL, 4, 'thailand'),
-(17, 'thủ đô Sukhothai', NULL, 4, 'thailand'),
-(18, 'Vườn Quốc Gia Khao Yai', NULL, 4, 'thailand'),
-(19, 'Vườn quốc gia Khao Yai', NULL, 4, 'thailand'),
-(20, 'Chợ Chatuchak', NULL, 4, 'Indian Ocean '),
-(21, 'Khám Phá Cung Đường Vàng Osaka - Kyoto - Tokyo', NULL, 4, 'japan'),
-(22, 'Du lịch Lễ hội ánh sáng Nabana no Sato - Nhật Bản', NULL, 4, 'japan'),
-(23, 'Khám phá hè Nhật Bản: Hà Nội - Nagoya- Tokyo', NULL, 4, 'japan'),
-(24, 'Tour Nhật Bản làng cổ Shirakawa-go', NULL, 4, 'japan'),
-(25, 'Núi Phú Sĩ', NULL, 4, 'japan'),
-(26, 'Tháp Tokyo Tower', NULL, 4, 'japan'),
-(27, 'Đền Kinkaku-ji ở Kyoto', NULL, 4, 'japan'),
-(28, 'Công viên khỉ Jigoku Dani', NULL, 4, 'japan'),
-(29, 'Lâu đài Himeji', NULL, 4, 'japan');
+(1, 'Đại Nội Huế', 'Nhắc đến quần thể di tích cố đô Huế, bạn không thể bỏ qua Đại Nội, 
+một dấu ấn văn hóa lịch sử độc đáo thuộc quần thể di tích cố đô Huế. Đại Nội là khu vực bao gồm Hoàng Thành và Tử Cấm Thành
+ với hơn 100 công trình kiến trúc được xây dựng từ thời vua nhà Nguyễn, chứng kiến bao thăng trầm của các triều đại phong kiến V
+ iệt Nam, và đã được tổ chức UNESCO công nhận là di sản văn hóa thế giới gần 30 năm trước.', 'Thành phố Huế, tỉnh Thừa Thiên Huế', 'vietnam\hue'),
+
+
+
+(2, 'Lăng Tự Đức', 'Huế nổi tiếng với các công trình lăng tẩm vua chúa và điện miếu thờ quan thần nhà Nguyễn, mà tiêu biểu nhất trong số đó là lăng Tự Đức – Khiêm Lăng, nơi có phong cảnh sơn thủy hữu tình tuyệt đẹp. Tổng thể công trình lăng Tự Đức mang màu lãng mạn nhưng u tịch, được xây theo nguyện vọng của ông trước khi mất, phảng phất tính cách trầm buồn bởi cuộc đời ông nhiều bất hạnh.', 'Thôn Thượng 3, phường Thủy Xuân, thành phố Huế, tỉnh Thừa Thiên Huế
+', 'vietnam\hue'),
+
+
+(3, 'Lăng Minh Mạng', 'Lăng Minh Mạng, hay còn gọi là Hiếu Lăng, là nơi chôn cất vị vua có nhiều đóng góp nhiều nhất đối với việc phát
+ triển và đưa nước Việt vào hãng ngũ các quốc gia lớn nhất Đông Nam Á lúc bấy giờ. ', ' Xã Hương Thọ, huyện Hương Trà, TP. Huế tỉnh Thừa Thiên Huế', 'vietnam\hue'),
+
+(4, 'Sông Hương', 'Mỗi thành phố đều có một dòng sông gắn liền như linh hồn của nơi đó.  cũng vậy. Đây là dòng sông đã đi vào lịch sử, thi ca, đi vào lòng mỗi người dân Huế. Với chiều dài khoảng 80km,  chảy qua rất nhiều địa điểm nổi tiếng của trung tâm thành phố Huế, bao lấy quần thể di tích cố đô, làm tăng thêm vẻ đẹp uy nghiêm, cổ kính của các công trình ấy.', 'Thành phố Huế, tỉnh Thừa Thiên Huế', 'vietnam\hue'),
+(5, 'Phố Đi Bộ Huế', 'Phố đi bộ là một địa điểm không thể thiếu ở bất kỳ thành phố du lịch nào. Ở Huế, địa điểm vui chơi về đêm này mới hoạt động thôi, nhưng đã thu hút sự quan tâm của dân địa phương lẫn du khách, đặc biệt là các bạn trẻ.', 'Đường Phạm Ngũ Lão, Chu Văn An và Võ Thị Sáu, phường Phú Hội, thành phố Huế, tỉnh Thừa Thiên Huế  ', 'vietnam\hue'),
+(6, 'Nhà Thờ Phủ Cam ', 'Tọa lạc trên đồi Phước Quả, nhà thờ Chính tòa Phủ Cam là công trình có từ thời chúa Nguyễn, khi ấy được dựng bằng tranh tre. Trải qua hàng trăm năm và nhiều lần xây dựng, nhà thờ Phủ Cam mới được hoàn thiện như ngày nay.', '1 Đoàn Hữu Trung, phường Phước Vĩnh, thành phố Huế, tỉnh Thừa Thiên Huế', 'vietnam\hue'),
+(7, 'Thác Datanla Đà Lạt', 'Nếu bạn đang tìm một thác nước đẹp nằm ngay trong thành phố thì hãy đến ngay thác Datanla, nơi có hệ thống máng trượt băng rừng dài nhất Đông Nam Á cùng các trò chơi hấp dẫn khác. Thác Datanla nằm giữa đèo Prenn, có độ cao hơn 20m, lại nằm ở thượng nguồn của dòng chảy nên dòng nước lúc nào cũng chảy ổn định và êm đềm. ', 'Quốc lộ 20, đèo Prenn, phường 3, thành phố Đà Lạt, tỉnh Lâm Đồng', 'vietnam\dalat'),
+(8, 'Núi Langbiang Đà Lạt', 'Được ví như trái tim của Đà Lạt, núi Langbiang nổi tiếng với loại hình dã ngoại, khám phá thiên nhiên, thu hút các bạn trẻ mê phượt và những nhà mạo hiểm. Nơi đây là ngôi nhà chung của nhiều loại thảo dược, thảo mộc, và chim quý.', 'Thị trấn Lạc Dương, huyện Lạc Dương, tỉnh Lâm Đồng', 'vietnam\dalat'),
+(9, 'Đồi Robin Đà Lạt', 'Nằm trên đèo Prenn thơ mộng, đồi Robin đã trở thành một điểm tham quan hấp dẫn bởi nơi đây sở hữu tầm nhìn vô cùng thoáng đãng để chiêm ngưỡng vẻ đẹp của Đà Lạt.', '1 Đống Đa, phường 3, thành phố Đà Lạt, tỉnh Lâm Đồng', 'vietnam\dalat'),
+(10, 'QUE Garden Đà Lạt', 'Nếu yêu thích nghệ thuật cây cảnh bonsai, hãy ghé đến QUE Garden Đà Lạt, vườn bonsai lá kim lớn nhất Việt Nam. Đến , bạn ngỡ như mình đang ở đất nước mặt trời mọc, với những chậu cây bonsai được chăm sóc và uốn nắn kỹ lưỡng vô cùng đẹp mắt, bên cạnh hồ cá Koi đạt tiêu chuẩn Nhật Bản với hàng ngàn con cá Koi to khỏe. ', 'Phường 10, thành phố Đà Lạt, tỉnh Lâm Đồng', 'vietnam\dalat'),
+(11, 'Thác Pongour Đà Lạt', ' được rất nhiều người biết đến bởi sự hùng vĩ, hoang sơ với hệ động thực vật đa dạng và được mệnh danh là Nam Thiên Đệ Nhất Thác', 'Thôn Tân Nghĩa, xã Ninh Gia, huyện Đức Trọng, tỉnh Lâm Đồng', 'vietnam'),
+(12, 'Chợ Đêm Đà Lạt', 'Từ lâu, chợ đêm Đà Lạt đã thành điểm đến quen thuộc mà bất cứ ai khi đến du lịch Đà Lạt đều muốn lui tới. Chợ đêm Đà Lạt, hay còn được gọi là chợ Âm Phủ, tọa lạc ngay trung tâm thành phố, rất gần các bến xe khách và quảng trường thành phố. Chợ đêm nhộn nhịp cả trong nhà lẫn ngoài trời nên rất tiện lợi cho bạn ghé qua.', 'Đường Nguyễn Thị Minh Khai, phường 1, thành phố Đà Lạt, tỉnh Lâm Đồng', 'vietnam\dalat'),
+
+
+(13, 'Bảo tàng Quảng Ninh', 'Bảo tàng – thư viện Quảng Ninh được ví như viên ngọc đen quý báu, sáng lấp lánh bên vịnh Hạ Long. Với thiết kế phá cách, đơn giản mà sang trọng, tòa nhà vuông vức với toàn bộ bề mặt bên ngoài màu đen đã thu hút rất đông du khách du lịch Hạ Long tới tham quan, chụp ảnh. ', '', 'vietnam\quangninh'),
+(14, 'Vịnh Hạ Long', 'Với vẻ đẹp non nước hùng vĩ tựa tranh vẽ, vịnh Hạ Long được UNESCO công nhận là kỳ quan thiên nhiên thế giới. Sự hiện diện của hàng nghìn hòn đảo và hang động hoang sơ, đẹp kỳ bí cùng hệ sinh thái phong phú, vịnh Hạ Long đã trở thành điểm đến cực kỳ độc đáo mà bất kỳ du khách nào cũng muốn ghé thăm. Một hòn đảo, hang động nổi tiếng tại vịnh Hạ Long bạn có thể tham khảo như: hòn Gà Chọi, đảo Ngọc Vừng, hòn Con Cóc, đảo Ti Tốp, hang Sửng Sốt...', '', 'vietnam\quangninh'),
+(15, 'Du lịch đảo Tuần Châu, Hạ Long', NULL, '', 'vietnam\quangninh'),
+(16, 'Vinpearl Land', NULL, '98B/13, Trần Phú, Lộc Thọ, Thành phố Nha Trang, Khánh Hòa', 'vietnam\nhatrang'),
+(17, 'Viện Hải dương học', NULL, 'số 1, Cầu Đá, Trần Phú, thành phố Nha Trang, tỉnh Khánh Hòa.', 'vietnam\nhatrang'),
+(18, 'Đảo Điệp Sơn', 'Nằm trong Vịnh Ninh Vân xinh đẹp, đảo Điệp Sơn đẹp nổi bật như một dấu ấn riêng của Nha Trang', '', 'vietnam\nhatrang'),
+(19, 'Đảo Khỉ Nha Trang', 'Nha Trang gây ấn tượng với du khách với nhiều địa điểm du lịch thú vị và độc đáo, trong đó có Đảo Khỉ Nha Trang.', '', 'vietnam\nhatrang'),
+(20, 'Grand World Phú Quốc - Khám phá "Thành phố không ngủ"', 'Grand World Phú Quốc nằm trong quần thể nghỉ dưỡng, giải trí đẳng cấp hàng đầu tại Việt Nam - Phú Quốc United Center. Tổ hợp vui chơi, mua sắm, giải trí này thuộc địa phận bãi Dài, xã Gành Dầu, Phú Quốc, Kiên Giang. ', '', 'vietnam\phuquoc'),
+(21, 'VinWonders Phú Quốc - Thiên đường vui chơi giải trí', 'Grand World Phú Quốc nằm trong quần thể nghỉ dưỡng, giải trí đẳng cấp hàng đầu tại Việt Nam - Phú Quốc United Center. Tổ hợp vui chơi, mua sắm, giải trí này thuộc địa phận bãi Dài, xã Gành Dầu, Phú Quốc, Kiên Giang. ', '', 'vietnam\phuquoc'),
+(22, 'Hòn Đồi Mồi ', 'Mệnh danh là hòn đảo có nhiều sinh vật phong phú nhất Phú Quốc, hòn Đồi Mồi sẽ đưa bạn đến gần với thiên nhiên hoang sơ đầy kỳ bí. Hòn Đồi Mồi cách Bãi Dài chỉ khoảng 1km. Đây là địa điểm du lịch Phú Quốc lý tưởng để tổ chức những bữa tiệc BBQ trên bãi biển, những hoạt động vui chơi, teambuilding cực kỳ thú vị với bạn bè, người thân. ', '', 'vietnam\phuquoc'),
+(23, 'Bãi Sao - Bãi biển đẹp nhất Phú Quốc', 'Bãi Sao được ôm trọn bởi 2 dãy núi chạy sát biển nên có khí hậu trong lành, mát mẻ cực kỳ thích hợp cho một kỳ nghỉ dưỡng tuyệt vời mỗi khi hè về. Khoảng thời gian du lịch đẹp nhất của bãi Sao từ tháng 6 đến tháng 10 hằng năm. ', '', 'vietnam\phuquoc');
+
 
 -- 
 -- Dumping data for table permission
@@ -462,10 +494,11 @@ INSERT INTO permission VALUES
 -- Dumping data for table service
 --
 INSERT INTO service VALUES
-(1, 'Nhà hàng 5 sao', 500000.0000),
-(2, 'mua sắm giảm 30%', 300000.0000),
+(1, 'Nhà hàng 5 sao - bữa ăn hải sản', 800000.0000),
+(2, 'mua sắm giảm 30% - tặng kèm nhiều dịch vụ miễn phí', 300000.0000),
 (3, 'tự do, miễn phí chơi ở khu thể thao', 100000.0000),
-(4, 'miễn phí khi chơi ở các khu vui chơi giải trí', 500000.0000);
+(4, 'miễn phí khi chơi ở các khu vui chơi giải trí', 200000.0000),
+(5, 'đi kèm các dụng cụ du lịch thiết yếu, giúp tăng trải nghiệm du lịch', 300000.0000);
 
 -- 
 -- Dumping data for table booking
@@ -480,19 +513,32 @@ INSERT INTO tour_detail VALUES
 (2, 1, 2, '2023-04-13 10:28:31'),
 (3, 1, 3, '2023-04-13 10:28:31'),
 (4, 1, 4, '2023-04-13 10:28:31'),
-(5, 2, 16, '2023-04-13 10:28:31'),
-(6, 2, 17, '2023-04-13 10:28:31'),
-(7, 3, 21, '2023-04-13 10:28:31'),
-(8, 3, 22, '2023-04-13 10:28:31'),
-(9, 4, 12, '2023-04-13 10:28:31'),
-(10, 5, 23, '2023-04-13 10:28:31'),
-(11, 5, 24, '2023-04-13 10:28:31'),
-(12, 6, 18, '2023-04-13 10:28:31'),
-(13, 6, 19, '2023-04-13 10:28:31'),
-(14, 7, 1, '2023-04-13 10:28:31'),
-(15, 7, 2, '2023-04-13 10:28:31'),
-(16, 7, 6, '2023-04-13 10:28:31'),
-(17, 7, 7, '2023-04-13 10:28:31');
+(5, 1, 5, '2023-04-13 10:28:31'),
+(6, 1, 6, '2023-04-13 10:28:31'),
+(7, 2, 7, '2023-04-13 10:28:31'),
+(8, 2, 8, '2023-04-13 10:28:31'),
+(9, 2, 9, '2023-04-13 10:28:31'),
+(10, 2, 10, '2023-04-13 10:28:31'),
+(11, 2, 11, '2023-04-13 10:28:31'),
+(12, 2, 12, '2023-04-13 10:28:31'),
+(13, 3, 16, '2023-04-13 10:28:31'),
+(14, 3, 17, '2023-04-13 10:28:31'),
+(15, 4, 18, '2023-04-13 10:28:31'),
+(16, 4, 19, '2023-04-13 10:28:31'),
+(17, 5, 13, '2023-04-13 10:28:31'),
+(18, 5, 14, '2023-04-13 10:28:31'),
+(19, 5, 15, '2023-04-13 10:28:31'),
+(20, 6, 20, '2023-04-13 10:28:31'),
+(21, 6, 21, '2023-04-13 10:28:31'),
+(22, 6, 22, '2023-04-13 10:28:31'),
+(23, 6, 23, '2023-04-13 10:28:31');
+
+
+
+
+
+
+
 
 -- 
 -- Dumping data for table role_permission
@@ -522,6 +568,14 @@ INSERT INTO role_permission VALUES
 (22, 5, 8),
 (23, 5, 9),
 (24, 5, 10);
+
+
+INSERT INTO booking ( booking_id, tour_id, customer_id, customer_number, service_id, total_cost) VALUES
+(1,1,1,1,5,800000),
+(2,1,2,1,5,800000),
+(3,2,3,2,5,1600000),
+(4,2,4,1,5,800000);
+
 
 -- 
 -- Dumping data for table booking_detail
