@@ -6,7 +6,7 @@ import DTO.HotelDTO;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class HotelDAO implements AccessDatabase<HotelDTO>{
+public class HotelDAO implements DAO<HotelDTO> {
 
 
     @Override

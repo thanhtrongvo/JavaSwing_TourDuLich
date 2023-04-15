@@ -1,6 +1,5 @@
 package DAO;
 
-import DTO.PlaceDTO;
 import DTO.RegionDTO;
 
 import java.sql.Connection;
@@ -9,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class RegionDAO implements AccessDatabase<RegionDTO>{
+public class RegionDAO implements DAO<RegionDTO> {
     @Override
     public ArrayList<RegionDTO> getAll() {
         ArrayList<RegionDTO> arr = new ArrayList<RegionDTO>();

@@ -1,7 +1,6 @@
 package DAO;
 
-import DTO.CustomerDTO;
-
+import DTO.RoleDTO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,25 +8,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerDAO implements DAO<CustomerDTO> {
+public class RoleDAO implements DAO<RoleDTO> {
 
     @Override
-    public ArrayList<CustomerDTO> getAll() {
-        ArrayList<CustomerDTO> arr = new ArrayList<CustomerDTO>();
+    public ArrayList<RoleDTO> getAll() {
+        ArrayList<RoleDTO> arr = new ArrayList<RoleDTO>();
         ConnectDatabase conndb = new ConnectDatabase();
         try {
             Connection conn = conndb.getConnection();
-            String query = "Select * from customer";
+            String query = "Select * from role";
             ResultSet rs = conn.createStatement().executeQuery(query);
             while (rs.next()) {
-                CustomerDTO customer = new CustomerDTO();
-                customer.setCustomer_id(rs.getInt("customer_id"));
-                customer.setCustomer_name(rs.getString("customer_name"));
-                customer.setTel(rs.getInt("tel"));
-                customer.setBirthday(rs.getDate("birthday"));
-                customer.setEmail(rs.getString("email"));
-                customer.setCreate_at(rs.getDate("create_at"));
-                arr.add(customer);
+                RoleDTO role = new RoleDTO();
+                role.setRole_id(rs.getInt("role_id"));
+                role.setRole_name(rs.getString("role_name"));
+                arr.add(role);
             }
 
         }
@@ -42,23 +37,19 @@ public class CustomerDAO implements DAO<CustomerDTO> {
     }
 
     @Override
-    public CustomerDTO getById(int id) {
-        CustomerDTO customer = new CustomerDTO();
+    public RoleDTO getById(int id) {
+        RoleDTO role = new RoleDTO();
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String query = "select * from customer where customer_id = ?";
+            String query = "select * from role where role_id = ?";
             PreparedStatement st = conn.prepareStatement(query);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();
             if (rs.next()){
-                customer.setCustomer_id(rs.getInt("customer_id"));
-                customer.setCustomer_name(rs.getString("customer_name"));
-                customer.setTel(rs.getInt("tel"));
-                customer.setBirthday(rs.getDate("birthday"));
-                customer.setEmail(rs.getString("email"));
-                customer.setCreate_at(rs.getDate("create_at"));
+                role.setRole_id(rs.getInt("role_id"));
+                role.setRole_name(rs.getString("role_name"));
             }
             else return null;
 
@@ -68,23 +59,20 @@ public class CustomerDAO implements DAO<CustomerDTO> {
         finally {
             conndb.closeConnection();
         }
-        return customer;
+        return role;
     }
 
     @Override
-    public boolean add(CustomerDTO customerDTO) {
+    public boolean add(RoleDTO roleDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "insert into customer value (?,?,?,?,?)";
+            String sql = "insert into role value (?,?)";
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setInt(1,customerDTO.getCustomer_id());
-            st.setString(2,customerDTO.getCustomer_name());
-            st.setInt(3,customerDTO.getTel());
-            st.setDate(4,customerDTO.getBirthday());
-            st.setString(5,customerDTO.getEmail());
+            st.setInt(1,roleDTO.getRole_id());
+            st.setString(2,roleDTO.getRole_name());
 
             if (st.executeUpdate()>=1)
                 result = true;
@@ -101,23 +89,17 @@ public class CustomerDAO implements DAO<CustomerDTO> {
     }
 
     @Override
-    public boolean update(CustomerDTO customerDTO) {
+    public boolean update(RoleDTO roleDTO) {
         boolean result = false;
         ConnectDatabase conndb = new ConnectDatabase();
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "update customer set " +
-                    "customer_name=?," +
-                    "tel=?," +
-                    "birthday=?," +
-                    "email=? " +
-                    "where customer_id = " + customerDTO.getCustomer_id();
+            String sql = "update role set " +
+                    "tour_id=? " +
+                    "where role_id = " + roleDTO.getRole_id();
             PreparedStatement st = conn.prepareStatement(sql);
-            st.setString(1,customerDTO.getCustomer_name());
-            st.setInt(2,customerDTO.getTel());
-            st.setDate(3,customerDTO.getBirthday());
-            st.setString(4,customerDTO.getEmail());
+            st.setString(1,roleDTO.getRole_name());
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -139,7 +121,7 @@ public class CustomerDAO implements DAO<CustomerDTO> {
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "delete from customer where customer_id = ?";
+            String sql = "delete from role where role_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             if (st.executeUpdate()>=1)
@@ -148,7 +130,6 @@ public class CustomerDAO implements DAO<CustomerDTO> {
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-
         }
         finally {
             conndb.closeConnection();
@@ -163,7 +144,7 @@ public class CustomerDAO implements DAO<CustomerDTO> {
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "select * from customer where customer_id = ?";
+            String sql = "select * from role where role_id=?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
             ResultSet rs = st.executeQuery();
@@ -179,4 +160,6 @@ public class CustomerDAO implements DAO<CustomerDTO> {
         }
         return result;
     }
+
+
 }

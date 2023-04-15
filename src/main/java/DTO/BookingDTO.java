@@ -11,7 +11,10 @@ public class BookingDTO {
 
     private Date create_at;
 
-    public BookingDTO() {}
+    public BookingDTO() {
+        total_cost = 0;
+
+    }
 
     public int getBooking_id() {
         return booking_id;

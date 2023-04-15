@@ -76,6 +76,7 @@ DROP TABLE IF EXISTS place;
 --
 DROP TABLE IF EXISTS region;
 
+
 --
 -- Drop table `user`
 --
@@ -371,9 +372,6 @@ REFERENCES customer (customer_id) ON UPDATE CASCADE;
 --
 -- Create foreign key
 --
-ALTER TABLE booking
-ADD CONSTRAINT fk_Booking_Service FOREIGN KEY (service_id)
-REFERENCES service (service_id) ON UPDATE CASCADE;
 
 --
 -- Create foreign key
@@ -578,11 +576,11 @@ INSERT INTO booking VALUES
 (4, 2, 4, 1,  1100000.0000, '2023-04-14 00:15:54');
 
 
-CREATE table booking_detail (
-    bd_id int NOT null AUTO_INCREMENT PRIMARY key
+CREATE TABLE booking_detail (
+    bd_id int NOT null AUTO_INCREMENT PRIMARY KEY,
     booking_id int not null,
-    service_id int not null
-)
+    service_id int NOT NULL
+);
 ALTER TABLE booking_detail
 ADD CONSTRAINT fk_bd_Booking FOREIGN KEY (booking_id)
 REFERENCES booking (booking_id) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,6 +1,5 @@
 package DAO;
 
-import DTO.CustomerDTO;
 import DTO.PlaceDTO;
 
 import java.sql.Connection;
@@ -9,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class PlaceDAO implements AccessDatabase<PlaceDTO>{
+public class PlaceDAO implements DAO<PlaceDTO> {
 
     @Override
     public ArrayList<PlaceDTO> getAll() {

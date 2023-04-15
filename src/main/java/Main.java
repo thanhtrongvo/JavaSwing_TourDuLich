@@ -1,9 +1,11 @@
 import DAO.*;
+import DTO.PlaceDTO;
 import DTO.TourDTO;
 
 
 import java.sql.SQLException;
-
+import java.util.ArrayList;
+import java.util.Vector;
 
 
 public class Main {
@@ -17,6 +19,10 @@ public class Main {
 
 //        TourDAO abc = new TourDAO();
 //        System.out.println( abc.getClass().getName());
+
+
+
+
     }
 
 

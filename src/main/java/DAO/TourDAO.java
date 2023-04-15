@@ -1,12 +1,12 @@
 package DAO;
 
+import DTO.PlaceDTO;
 import DTO.TourDTO;
 
-import java.awt.image.AreaAveragingScaleFilter;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class TourDAO implements AccessDatabase<TourDTO>{
+public class TourDAO implements DAO<TourDTO> {
 
     @Override
     public ArrayList<TourDTO> getAll() {
@@ -198,5 +198,40 @@ public class TourDAO implements AccessDatabase<TourDTO>{
         return result;
     }
 
+    public ArrayList<PlaceDTO> getPlacesOfTour (int id) {
+        ArrayList<PlaceDTO> places = new ArrayList<PlaceDTO>();
+        ConnectDatabase conndb = new ConnectDatabase();
+
+        try {
+            Connection conn = conndb.getConnection();
+            String sql = "\n" +
+                    "SELECT * from place p\n" +
+                    "WHERE p.place_id IN (\n" +
+                    "  SELECT td.place_id FROM tour_detail td\n" +
+                    "  where ? = td.tour_id\n" +
+                    ")";
+            PreparedStatement st = conn.prepareStatement(sql);
+            st.setInt(1,id);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                PlaceDTO place = new PlaceDTO();
+                place.setPlace_id(rs.getInt("place_id"));
+                place.setPlace_name(rs.getString("place_name"));
+                place.setPlace_describe(rs.getString("place_describe"));
+                place.setPlace_address(rs.getString("place_address"));
+                place.setRegion_code(rs.getString("region_code"));
+                places.add(place);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+
+        }
+        finally {
+            conndb.closeConnection();
+        }
+        return places;
+    }
 
 }

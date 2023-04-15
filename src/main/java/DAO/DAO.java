@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  * @author Admin
  */
-public interface AccessDatabase<T> {
+public interface DAO<T> {
     
     public ArrayList<T> getAll ();
     public T getById (int id);

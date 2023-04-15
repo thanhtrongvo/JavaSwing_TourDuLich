@@ -1,6 +1,5 @@
 package DAO;
 
-import DTO.TourDTO;
 import DTO.UserDTO;
 
 import java.sql.Connection;
@@ -9,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class UserDAO implements AccessDatabase<UserDTO>{
+public class UserDAO implements DAO<UserDTO> {
     @Override
     public ArrayList<UserDTO> getAll() {
         ArrayList<UserDTO> arr = new ArrayList<UserDTO>();
