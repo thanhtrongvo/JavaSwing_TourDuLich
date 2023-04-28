@@ -57,4 +57,5 @@ public class Booking_DetailDAO implements DAO<Booking_DetailDTO> {
     public boolean checkExistById(int id) {
         return false;
     }
+    //
 }
