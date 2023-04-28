@@ -33,7 +33,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Cursor;
 import javax.swing.border.LineBorder;
-import BUS.SignUpControl;
+import controller.SignUpControl;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -149,7 +149,7 @@ public class SignUp extends JFrame {
 		pnlImg.setLayout(null);
 
 		lblImg = new JLabel("");
-		lblImg.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("/img/bg_signin.jpg"))));
+		lblImg.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("bg_signin.jpg"))));
 		lblImg.setBounds(0, 0, 395, 461);
 		pnlImg.add(lblImg);
 
@@ -170,7 +170,7 @@ public class SignUp extends JFrame {
 		pnlSignUp.add(lblUserName);
 		
 		iconUser = new JLabel("");
-		iconUser.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("/img/user.png"))));
+		iconUser.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("user.png"))));
 		iconUser.setBounds(78, 136, 22, 28);
 		pnlSignUp.add(iconUser);
 		
@@ -194,7 +194,7 @@ public class SignUp extends JFrame {
 		pnlSignUp.add(lblPass);
 		
 		iconPass = new JLabel("");
-		iconPass.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("/img/lock.png"))));
+		iconPass.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("lock.png"))));
 		iconPass.setBounds(78, 193, 22, 28);
 		pnlSignUp.add(iconPass);
 
@@ -213,7 +213,7 @@ public class SignUp extends JFrame {
 		sepPass.setBounds(110, 218, 199, 2);
 		pnlSignUp.add(sepPass);
 
-		iconHiddenPass = new JButton(new ImageIcon("/img/hidPass.png"));
+		iconHiddenPass = new JButton(new ImageIcon("C:\\Users\\PC\\Downloads\\icon_java\\hidPass.png"));
 		iconHiddenPass.addActionListener(action);
 		iconHiddenPass.setFocusPainted(false);
 		iconHiddenPass.setBorderPainted(false);
@@ -228,7 +228,7 @@ public class SignUp extends JFrame {
 		pnlSignUp.add(lblConfPass);
 			
 		iconConfPass = new JLabel("");
-		iconConfPass.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("/img/confpass.png"))));
+		iconConfPass.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("confpass.png"))));
 		iconConfPass.setBounds(75, 255, 22, 28);
 		pnlSignUp.add(iconConfPass);
 		
@@ -252,7 +252,7 @@ public class SignUp extends JFrame {
 		pnlSignUp.add(lblEmail);
 		
 		iconEmail = new JLabel("");
-		iconEmail.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("/img/email.png"))));
+		iconEmail.setIcon(new ImageIcon(Toolkit.getDefaultToolkit().createImage(SignUp.class.getResource("email.png"))));
 		iconEmail.setBounds(78, 311, 22, 28);
 		pnlSignUp.add(iconEmail);
 		
@@ -295,7 +295,7 @@ public class SignUp extends JFrame {
 	// Show Password
 	public void showPass() {
 		ActionListener action = new SignUpControl(this);
-		iconShowPass = new JButton(new ImageIcon("/img/showPass.png"));
+		iconShowPass = new JButton(new ImageIcon("C:\\Users\\PC\\Downloads\\icon_java\\showPass.png"));
 		iconShowPass.addActionListener(action);
 		iconShowPass.setFocusPainted(false);
 		iconShowPass.setBorderPainted(false);

@@ -1,7 +1,11 @@
 import DAO.*;
+import DTO.CustomerDTO;
+import DTO.HotelDTO;
 import DTO.PlaceDTO;
 import DTO.TourDTO;
 import GUI.*;
+import view.Manager;
+
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,15 +26,22 @@ public class Main {
 
 //        TourDAO abc = new TourDAO();
 //        System.out.println( abc.getClass().getName());
-
-        SignIn signin = new SignIn();
-		signin.setVisible(true);
-
 //        EmpManager employeeManager = new EmpManager();
 //        employeeManager.setVisible(true);
-
-
+//     	 ArrayList<HotelDTO> jjjArrayList = HotelDAO.getInstance().getAll();
+//    	 for(HotelDTO ddd: jjjArrayList) {
+//    		 System.out.println(ddd.toString());
+//    	 }
+//    	 HotelDAO.getInstance().delete(13);
+//      	 ArrayList<HotelDTO> jjFDFD = HotelDAO.getInstance().getAll();
+//    	 for(HotelDTO ddd: jjFDFD) {
+//    		 System.out.println(ddd.toString());
+//    	 }
+//    	ArrayList<CustomerDTO> dddArrayList = CustomerDAO.getInstance().getAll();
+//    	for(CustomerDTO dddCustomerDTO : dddArrayList) {
+//    		System.out.println(dddArrayList.toString());
+    	Manager manager = new Manager();
+		manager.setVisible(true);
+    	}
     }
 
-
-}

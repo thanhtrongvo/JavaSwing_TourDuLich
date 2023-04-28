@@ -7,7 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class HotelDAO implements DAO<HotelDTO> {
-
+	public static HotelDAO getInstance() {
+		return new HotelDAO();
+	}
 
     @Override
     public ArrayList<HotelDTO> getAll() {
@@ -73,11 +75,11 @@ public class HotelDAO implements DAO<HotelDTO> {
     @Override
     public boolean add(HotelDTO HotelDTO) {
         boolean result = false;
-        HotelDTO hotel = new HotelDTO();
         ConnectDatabase conndb = new ConnectDatabase();
         try {
 
-            String query = "insert into hotel (?,?,?,?,?,?)";
+        	String query = " INSERT INTO hotel (hotel_id,hotel_name,address,tel,website,star)"
+					+ "VALUES (?,?,?,?,?,?)";
             PreparedStatement st = conndb.getConnection().prepareStatement(query);
             st.setInt(1,HotelDTO.getHotel_id());
             st.setString(2, HotelDTO.getHotel_name());
@@ -85,6 +87,13 @@ public class HotelDAO implements DAO<HotelDTO> {
             st.setInt(4,HotelDTO.getTel());
             st.setString(5,HotelDTO.getWebsite());
             st.setInt(6,HotelDTO.getStar());
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("Them thanh cong  !");
+            }
+            else {
+            	System.out.println("Them khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -102,7 +111,6 @@ public class HotelDAO implements DAO<HotelDTO> {
     @Override
     public boolean update(HotelDTO HotelDTO) {
         boolean result = false;
-        HotelDTO hotel = new HotelDTO();
         ConnectDatabase conndb = new ConnectDatabase();
         try {
 
@@ -118,7 +126,13 @@ public class HotelDAO implements DAO<HotelDTO> {
             st.setInt(3,HotelDTO.getTel());
             st.setString(4,HotelDTO.getWebsite());
             st.setInt(5,HotelDTO.getStar());
-
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("update thanh cong  !");
+            }
+            else {
+            	System.out.println("update khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -143,6 +157,13 @@ public class HotelDAO implements DAO<HotelDTO> {
             String sql = "delete from hotel where hotel_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("xoa thanh cong  !");
+            }
+            else {
+            	System.out.println("Xoa khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -167,6 +188,13 @@ public class HotelDAO implements DAO<HotelDTO> {
             String sql = "select * from hotel where hotel_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println(" thanh cong  !");
+            }
+            else {
+            	System.out.println("khong thanh cong !");
+            }
             ResultSet rs = st.executeQuery();
             result = rs.next();
 

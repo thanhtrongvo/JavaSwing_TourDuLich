@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class CustomerDAO implements DAO<CustomerDTO> {
+	public static CustomerDAO getInstance() {
+		return new CustomerDAO();
+	}
 
     @Override
     public ArrayList<CustomerDTO> getAll() {
@@ -78,14 +81,21 @@ public class CustomerDAO implements DAO<CustomerDTO> {
 
         try {
             Connection conn = conndb.getConnection();
-            String sql = "insert into customer value (?,?,?,?,?)";
+            String sql = "insert into customer (customer_id,customer_name,tel,birthday,email)"
+            		+ " value (?,?,?,?,?)";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,customerDTO.getCustomer_id());
             st.setString(2,customerDTO.getCustomer_name());
             st.setInt(3,customerDTO.getTel());
             st.setDate(4,customerDTO.getBirthday());
             st.setString(5,customerDTO.getEmail());
-
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("Them thanh cong  !");
+            }
+            else {
+            	System.out.println("Them khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -118,6 +128,13 @@ public class CustomerDAO implements DAO<CustomerDTO> {
             st.setInt(2,customerDTO.getTel());
             st.setDate(3,customerDTO.getBirthday());
             st.setString(4,customerDTO.getEmail());
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("update thanh cong  !");
+            }
+            else {
+            	System.out.println("update khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
@@ -142,6 +159,13 @@ public class CustomerDAO implements DAO<CustomerDTO> {
             String sql = "delete from customer where customer_id = ?";
             PreparedStatement st = conn.prepareStatement(sql);
             st.setInt(1,id);
+            int checkRS = st.executeUpdate();
+            if(checkRS> 0 ) {
+            	System.out.println("xoa thanh cong  !");
+            }
+            else {
+            	System.out.println("xoa khong thanh cong !");
+            }
             if (st.executeUpdate()>=1)
                 result = true;
 
